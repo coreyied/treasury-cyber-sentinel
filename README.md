@@ -32,7 +32,6 @@ treasury-cyber-sentinel/
 ### 1. Build the Database & Run Python Threat Telemetry
 Make sure Python 3 and Java are installed, then run the threat collector to initialize the SQLite warehouse (`treasury_sentinel.db`):
 ```bash
-python3 treasury_threat_collector.py
 2. Run the Java JDBC Compliance Engine
 Compile and execute the Java engine to verify the SHA-256 audit chain, enforce financial thresholds, export CSV surveillance outputs, and generate the interactive HTML workbench:
 
