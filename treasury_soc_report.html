@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Corporate Treasury & Wire Settlement Integrity System</title>
+<style>
+body{font-family:'Courier New',Courier,monospace;background:#ffffff;color:#000000;margin:0;padding:20px;font-size:13px;line-height:1.4;}
+.header{border-bottom:2px solid #000000;padding-bottom:10px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;}
+.header h1{margin:0;font-size:16px;font-weight:bold;text-transform:uppercase;}
+.header .links{font-size:12px;}
+.header .links a{color:#000000;text-decoration:underline;margin-left:15px;}
+.metrics-table{width:100%;border-collapse:collapse;margin-bottom:20px;border:1px solid #000000;}
+.metrics-table td{border:1px solid #000000;padding:8px 12px;font-size:12px;}
+.metrics-label{font-weight:bold;background:#f0f0f0;width:20%;}
+.section-title{font-size:13px;font-weight:bold;text-transform:uppercase;margin:25px 0 8px 0;border-bottom:1px solid #000000;padding-bottom:3px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+.card{border:1px solid #000000;padding:12px 15px;}
+.card h3{margin:0 0 5px 0;font-size:12.5px;text-transform:uppercase;font-weight:bold;}
+.card p{margin:0 0 10px 0;font-size:11.5px;color:#333333;}
+label{display:block;font-size:11px;font-weight:bold;margin:8px 0 2px 0;text-transform:uppercase;}
+input,textarea{width:100%;box-sizing:border-box;background:#ffffff;color:#000000;border:1px solid #000000;padding:5px;font-family:'Courier New',Courier,monospace;font-size:12px;}
+.output-pane{background:#f9f9f9;border:1px solid #000000;padding:8px;margin-top:8px;font-size:11.5px;white-space:pre-wrap;}
+button{background:#000000;color:#ffffff;border:1px solid #000000;padding:5px 10px;font-family:'Courier New',Courier,monospace;font-size:11.5px;cursor:pointer;margin-top:6px;margin-right:5px;}
+button.alt{background:#ffffff;color:#000000;}
+table.data-table{width:100%;border-collapse:collapse;margin-top:5px;font-size:11.5px;}
+table.data-table th, table.data-table td{border:1px solid #000000;padding:5px 7px;text-align:left;vertical-align:top;}
+table.data-table th{background:#e0e0e0;font-weight:bold;}
+.tag-hold{font-weight:bold;color:#cc0000;}
+.tag-pass{font-weight:bold;color:#006600;}
+.amt-input{width:90px;padding:2px;font-family:'Courier New',Courier,monospace;font-size:11.5px;}
+.footer{margin-top:30px;border-top:1px solid #000000;padding-top:10px;font-size:11px;display:flex;justify-content:space-between;}
+</style></head><body>
+<div class='header'><div><h1>Corporate Treasury & Wire Settlement Integrity System</h1>
+<div style='font-size:11.5px;margin-top:2px;'>SQLite DB | Python Telemetry Scraper | Java JDBC Compliance Engine</div></div>
+<div class='links'><a href='https://github.com/coreyied' target='_blank'>GitHub: coreyied</a><a href='sample_data/credit_surveillance_output.csv' download>Export CSV</a></div></div>
+<table class='metrics-table'>
+<tr><td class='metrics-label'>Ledger Status</td><td id='kpi-ledger' style='color:#006600;font-weight:bold;'>OK (6 rows verified)</td>
+<td class='metrics-label'>Held Wires</td><td style='color:#cc0000;font-weight:bold;'>5 of 6 flagged</td></tr>
+<tr><td class='metrics-label'>Held Amount</td><td>$351,500.00</td>
+<td class='metrics-label'>Leading '4' Digit</td><td>50.0% (Benford avg: 9.7%)</td></tr>
+</table>
+<div class='section-title'>1. Validation Checks & Test Scanners</div>
+<div class='grid-2'>
+<div class='card'><h3>Vendor Domain & Routing Check</h3>
+<p>Tests domain similarity (Levenshtein distance & entropy) against vendor records and validates 9-digit ABA routing numbers using Mod-10 weights.</p>
+<label>Expected Vendor Domain</label><input id='offDom' value='vanguardmidstream.com' oninput='runBecLab()'>
+<label>Incoming Invoice Domain</label><input id='atkDom' value='vanguardmidstrearn.com' oninput='runBecLab()'>
+<label>9-Digit ABA Routing Number</label><input id='abaNum' value='021000021' maxlength='9' oninput='runBecLab()'>
+<div class='output-pane' id='becOut'></div></div>
+<div class='card'><h3>Payment Memo PII & Card Filter</h3>
+<p>Scans text fields for credit card numbers, tax SSNs, and API keys. Validates card numbers via the Luhn check before tokenizing.</p>
+<label>Sample Wire Memo Text</label>
+<textarea id='dlpIn' rows='4' oninput='runDlpLab()'>Wire memo: Card 4532-0151-1283-0366, SSN 442-88-1920, token sk_live_9948102948102948abc</textarea>
+<div class='output-pane' id='dlpOut'></div></div>
+</div>
+<div class='section-title'>2. Audit Trail & Hash Chain (sox_immutable_ledger)</div>
+<p style='font-size:11.5px;margin-bottom:8px;'>Change any dollar amount below to test if an unauthorized edit breaks the SHA-256 chain.</p>
+<div style='margin-bottom:8px;'><button onclick='simulateAttack()'>Simulate $10k Edit on Row #2</button><button class='alt' onclick='resetLedger()'>Reset Values</button></div>
+<div class='output-pane' id='tamperOut' style='margin-bottom:8px;'>Status: All row hashes match database state.</div>
+<table class='data-table'><thead><tr><th>Row</th><th>Timestamp</th><th>Reference ID</th><th>Amount (Editable)</th><th>Actor</th><th>Previous Hash</th><th>Calculated SHA-256 Hash</th><th>Status</th></tr></thead>
+<tbody id='ledgerBody'></tbody></table>
+<div class='section-title'>3. Wire Transfer Surveillance View (v_treasury_wire_surveillance)</div>
+<table class='data-table'><thead><tr><th>Wire ID</th><th>Vendor</th><th>Amount</th><th>24h Total</th><th>Routing</th><th>Domain Flag</th><th>Rule Triggered</th><th>Scrubbed Memo</th><th>Status</th></tr></thead><tbody>
+<tr><td>WIR-9003</td><td>Apex Industrial Precision LLC</td><td>$48,500.00</td><td>$145,500.00</td><td>ROUTING_MISMATCH</td><td>apexprecisi0n.com</td><td>Split wire pattern over $50k limit + routing mismatch</td><td>Turbine tooling batch 1 of 3. Backup procurement card [REDACTED_PAN_HMAC:1D671BF78254713B5DAE6AD8] on file.</td><td><span class='tag-hold'>[HOLD]</span></td></tr><tr><td>WIR-9004</td><td>Apex Industrial Precision LLC</td><td>$49,200.00</td><td>$145,500.00</td><td>ROUTING_MISMATCH</td><td>apexprecisi0n.com</td><td>Split wire pattern over $50k limit + routing mismatch</td><td>Turbine tooling batch 2 of 3. Contractor tax SSN [REDACTED_SSN_HMAC:83709CD0BC9A270785AEEE60] attached for 1099.</td><td><span class='tag-hold'>[HOLD]</span></td></tr><tr><td>WIR-9005</td><td>Apex Industrial Precision LLC</td><td>$47,800.00</td><td>$145,500.00</td><td>ROUTING_MISMATCH</td><td>apexprecisi0n.com</td><td>Split wire pattern over $50k limit + routing mismatch</td><td>Turbine tooling batch 3 of 3. Expedited same-day Fedwire settlement.</td><td><span class='tag-hold'>[HOLD]</span></td></tr><tr><td>WIR-9006</td><td>Kestrel Omni-Logistics Corp</td><td>$64,000.00</td><td>$64,000.00</td><td>ROUTING_MISMATCH</td><td>kestrel-logistics-pay.com</td><td>ABA routing number doesn't match vendor file</td><td>Port drayage settlement per kestrel-logistics-pay.com portal invoice.</td><td><span class='tag-hold'>[HOLD]</span></td></tr><tr><td>WIR-9002</td><td>Vanguard Midstream Partners LP</td><td>$142,000.00</td><td>$142,000.00</td><td>ROUTING_MISMATCH</td><td>vanguardmidstrearn.com</td><td>ABA routing number doesn't match vendor file</td><td>URGENT: Updated routing per vanguardmidstrearn.com CFO notice. Auth token [REDACTED_SECRET_HMAC:E7871048C5388CB43DE234F0]</td><td><span class='tag-hold'>[HOLD]</span></td></tr><tr><td>WIR-9001</td><td>Meridian Cloud Settlement Inc</td><td>$38,500.00</td><td>$38,500.00</td><td>VERIFIED</td><td>NONE</td><td>None</td><td>Q3 Cloud Settlement Invoice #88412 - Standard ACH Clearing</td><td><span class='tag-pass'>[PASS]</span></td></tr>
+</table>
+<div class='footer'><div>Repository: <a href='https://github.com/coreyied' target='_blank'>github.com/coreyied</a></div><div>Corporate Treasury & Wire Settlement Integrity System</div></div>
+<script>
+const origLedger = [{seq:1, ts:'2026-10-29 09:15:00', cat:'FEDWIRE_SUBMISSION', ref:'WIR-9001', amt:38500.00, actor:'usr_jdoe', origHash:'3a2f4256abfc0e7c5f6a64569d363f4c01e1107bc92bdb698d4106dab1e4a70c'},{seq:2, ts:'2026-10-29 11:05:00', cat:'FEDWIRE_SUBMISSION', ref:'WIR-9002', amt:142000.00, actor:'usr_mchen', origHash:'010a8b9eeb86279930912877e69d5be587990cb28fd94c1448a9dcdc5b80a248'},{seq:3, ts:'2026-10-29 13:10:00', cat:'FEDWIRE_SUBMISSION', ref:'WIR-9003', amt:48500.00, actor:'usr_kpatel', origHash:'3b38407f3feaab10e3fda461193b7f6bf023a5e3fb1a5a9b47c2cfab424f43df'},{seq:4, ts:'2026-10-29 13:22:00', cat:'FEDWIRE_SUBMISSION', ref:'WIR-9004', amt:49200.00, actor:'usr_kpatel', origHash:'f85a74784fc29e5cd3b81b8129900b682dda69c2770ae436323a6c4f067d3227'},{seq:5, ts:'2026-10-29 13:35:00', cat:'FEDWIRE_SUBMISSION', ref:'WIR-9005', amt:47800.00, actor:'usr_kpatel', origHash:'360cca743c61d996887206a0574d813f45604dd46d4a4ed72d799651c5437921'},{seq:6, ts:'2026-10-29 15:40:00', cat:'FEDWIRE_SUBMISSION', ref:'WIR-9006', amt:64000.00, actor:'usr_jdoe', origHash:'7168fade15e2fbda2d4a0b059d587732b17d48850d2fbeadd18acb80f5590194'}];
+let liveLedger = JSON.parse(JSON.stringify(origLedger));
+function levenshtein(a,b){const m=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)m[0][j]=j;for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]!==b[j-1]?1:0));return m[a.length][b.length];}
+function entropy(s){if(!s)return 0;const f={};for(let c of s)f[c]=(f[c]||0)+1;return Object.values(f).reduce((acc,v)=>{const p=v/s.length;return acc-p*Math.log2(p);},0);}
+function checkAba(r){if(!/^\d{9}$/.test(r))return false;const w=[3,7,1,3,7,1,3,7,1];let s=0;for(let i=0;i<9;i++)s+=parseInt(r[i])*w[i];return s%10===0;}
+function runBecLab(){const o=document.getElementById('offDom').value.trim().split('.')[0];const a=document.getElementById('atkDom').value.trim().split('.')[0];const aba=document.getElementById('abaNum').value.trim();const d=levenshtein(o,a);const sim=Math.max(0,((1-d/Math.max(o.length,a.length,1))*100)).toFixed(1);const ent=entropy(a).toFixed(2);const abaOk=checkAba(aba);document.getElementById('becOut').innerHTML=`Edit distance: ${d} | Similarity: ${sim}% | Entropy: ${ent} bits\nABA Mod-10 Checksum: ${abaOk?'VALID':'INVALID'}\nStatus: ${(sim>=75&&d>0)?'FLAGGED (Potential Lookalike)':'NORMAL'}`;}
+function luhn(num){const d=num.replace(/\D/g,'').split('').reverse().map(Number);if(d.length<13||d.length>19)return false;const s=d.reduce((a,v,i)=>{if(i%2===1){v*=2;if(v>9)v-=9;}return a+v;},0);return s%10===0;}
+function fnvHash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return (h>>>0).toString(16).toUpperCase().padStart(8,'0');}
+function runDlpLab(){let txt=document.getElementById('dlpIn').value;let hits=[];txt=txt.replace(/\b(?:\d{4}[-\s]?){3}\d{4}\b/g,m=>{if(luhn(m)){const t=fnvHash(m)+'T';hits.push(`Card verified via Luhn -> Token: ${t}`);return `[REDACTED_CARD:${t}]`;}else{hits.push(`16-digit failed Luhn check`);return m;}});txt=txt.replace(/\b\d{3}-\d{2}-\d{4}\b/g,m=>{const t=fnvHash(m)+'S';hits.push(`SSN matched -> Token: ${t}`);return `[REDACTED_SSN:${t}]`;});txt=txt.replace(/sk_live_[0-9a-zA-Z]{8,}/g,m=>{const t=fnvHash(m)+'K';hits.push(`API Key matched -> Token: ${t}`);return `[REDACTED_KEY:${t}]`;});document.getElementById('dlpOut').innerHTML=`Scrubbed Text:\n${txt}\n\nFilter Log:\n${hits.join('\n')||'No matches.'}`;}
+async function sha256(str){const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+async function renderLedger(){let prev='0'.repeat(64);let html='';let broken=false;let firstBroken=null;for(let i=0;i<liveLedger.length;i++){const b=liveLedger[i];const payload=`${b.ts}|${b.cat}|${b.ref}|${Number(b.amt).toFixed(2)}|${b.actor}|${prev}`;const curr=await sha256(payload);const match=(curr===b.origHash)&&!broken;if(!match&&!broken){broken=true;firstBroken=b.seq;}const badge=match?'<span style="color:#006600;font-weight:bold;">OK</span>':'<span style="color:#cc0000;font-weight:bold;">MISMATCH</span>';html+=`<tr style="background:${match?'#ffffff':'#ffeeee'}"><td>#${b.seq}</td><td>${b.ts}</td><td>${b.ref}</td><td><input type="number" class="amt-input" value="${b.amt}" oninput="updateAmt(${i},this.value)"></td><td>${b.actor}</td><td>${prev.substring(0,12)}...</td><td style="color:${match?'#000':'#cc0000'};font-weight:${match?'normal':'bold'}">${curr.substring(0,14)}...</td><td>${badge}</td></tr>`;prev=curr;}document.getElementById('ledgerBody').innerHTML=html;const kpi=document.getElementById('kpi-ledger');const out=document.getElementById('tamperOut');if(broken){kpi.innerHTML='HASH MISMATCH (Row #'+firstBroken+')';kpi.style.color='#cc0000';out.innerHTML='<span style="color:#cc0000;font-weight:bold;">TAMPER DETECTED:</span> Hash mismatch at Row #'+firstBroken+'. Subsequent chain is broken.';}else{kpi.innerHTML='OK ('+liveLedger.length+' rows verified)';kpi.style.color='#006600';out.innerHTML='Status: All row hashes match database state.';}}
+function updateAmt(idx,val){liveLedger[idx].amt=parseFloat(val||0);renderLedger();}
+function simulateAttack(){liveLedger[1].amt=152000.00;renderLedger();}
+function resetLedger(){liveLedger=JSON.parse(JSON.stringify(origLedger));renderLedger();}
+runBecLab();runDlpLab();renderLedger();
+</script></body></html>

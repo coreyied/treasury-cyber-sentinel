@@ -1,0 +1,7 @@
+wire_id,vendor_id,vendor_name,sector,request_timestamp,amount_usd,approval_limit,routing_status,vendor_24h_total,flagged_domain,rule_triggered,status
+WIR-9003,VND-101,Apex Industrial Precision LLC,Aerospace & Defense,2026-10-29 13:10:00,48500.00,50000.00,ROUTING_MISMATCH,145500.00,apexprecisi0n.com,Split wire pattern over $50k limit + routing mismatch,HOLD
+WIR-9004,VND-101,Apex Industrial Precision LLC,Aerospace & Defense,2026-10-29 13:22:00,49200.00,50000.00,ROUTING_MISMATCH,145500.00,apexprecisi0n.com,Split wire pattern over $50k limit + routing mismatch,HOLD
+WIR-9005,VND-101,Apex Industrial Precision LLC,Aerospace & Defense,2026-10-29 13:35:00,47800.00,50000.00,ROUTING_MISMATCH,145500.00,apexprecisi0n.com,Split wire pattern over $50k limit + routing mismatch,HOLD
+WIR-9006,VND-202,Kestrel Omni-Logistics Corp,Global Freight & Supply,2026-10-29 15:40:00,64000.00,50000.00,ROUTING_MISMATCH,64000.00,kestrel-logistics-pay.com,ABA routing number doesn't match vendor file,HOLD
+WIR-9002,VND-303,Vanguard Midstream Partners LP,Energy Infrastructure,2026-10-29 11:05:00,142000.00,50000.00,ROUTING_MISMATCH,142000.00,vanguardmidstrearn.com,ABA routing number doesn't match vendor file,HOLD
+WIR-9001,VND-404,Meridian Cloud Settlement Inc,FinTech Clearing,2026-10-29 09:15:00,38500.00,50000.00,VERIFIED,38500.00,NONE,None,PASS
